@@ -13,7 +13,7 @@ const publicPaths = {
     QA: 'https://s3.amazonaws.com/manywho-cdn-react-qa/',
     STAGING: 'https://s3.amazonaws.com/manywho-cdn-react-staging/',
     PRODUCTION: 'https://assets.manywho.com/',
-	END2END: 'http://localhost:9000/flow/'
+	END2END: 'http://localhost:8989/'
 }
 
 const mapPublicPath = (assets, publicPaths) => {

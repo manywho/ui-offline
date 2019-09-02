@@ -56,7 +56,7 @@
         "tslint-loader": "3.6.0",
         "typedoc": "^0.11.1",
         "typescript": "^2.3.2",
-        "uglifyjs-webpack-plugin": "^1.2.4",
+        "uglifyjs-webpack-plugin": "^2.2.0",
         "webpack": "^4.0.0",
         "webpack-bundle-analyzer": "^2.11.1",
         "webpack-cli": "^3.3.7",

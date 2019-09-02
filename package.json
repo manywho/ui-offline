@@ -31,7 +31,7 @@
         "css-loader": "^0.28.11",
         "del": "^1.1.1",
         "enzyme": "^3.3.0",
-        "enzyme-adapter-react-16": "^1.1.1",
+        "enzyme-adapter-react-16": "^1.14.0",
         "fs-promise": "^2.0.2",
         "husky": "^3.0.5",
         "identity-obj-proxy": "^3.0.0",

@@ -4,7 +4,9 @@ export interface IGoOnlineState {
 
 export interface IGoOnlineProps {
     flowKey: string;
+    flowState: any;
     onClose: Function;
     onOnline: Function;
     toggleIsReplaying: Function;
+    setFlowFromCache: Function;
 }

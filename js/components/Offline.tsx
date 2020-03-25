@@ -20,10 +20,10 @@ enum OfflineView {
 
 const mapStateToProps = (state) => {
     return {
-        isOffline: state.isOffline,
-        hasNetwork: state.hasNetwork,
-        isReplaying: state.isReplaying,
-        cachingProgress: state.cachingProgress,
+        isOffline: state.offlineState.isOffline,
+        hasNetwork: state.offlineState.hasNetwork,
+        isReplaying: state.offlineState.isReplaying,
+        cachingProgress: state.offlineState.cachingProgress,
     };
 };
 

@@ -14,4 +14,5 @@ export interface IOfflineProps {
     toggleIsOffline: Function;
     toggleIsReplaying: Function;
     toggleIsOnline: Function;
+    foo: Function;
 }

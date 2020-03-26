@@ -20,9 +20,19 @@ interface IOfflineState {
     isReplaying: boolean;
     hasNetwork: boolean;
     isOffline: boolean;
+    replayError: any;
 }
 
-const offlineState = (state: IOfflineState = { cachingProgress: 0, isReplaying: false, hasNetwork: true, isOffline: false }, action) => {
+const offlineState = (
+    state: IOfflineState = {
+        replayError: null,
+        cachingProgress: 0,
+        isReplaying: false,
+        hasNetwork: true,
+        isOffline: false,
+    },
+    action) => {
+
     switch (action.type) {
     case 'HAS_NETWORK':
         return {
@@ -61,6 +71,12 @@ const offlineState = (state: IOfflineState = { cachingProgress: 0, isReplaying: 
         return {
             ...state,
             cachingProgress: action.payload,
+        };
+
+    case 'REPLAY_ERROR':
+        return {
+            ...state,
+            replayError: action.payload,
         };
 
     default:

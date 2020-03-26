@@ -1,16 +1,21 @@
 import * as React from 'react';
 import { hasNetwork } from '../services/Connection';
 import OfflineCore from '../services/OfflineCore';
-import { setOfflineData } from '../services/Storage';
+
 import { IOfflineProps, IOfflineState } from '../interfaces/IOffline';
 import { connect } from 'react-redux';
 import { isOffline, isOnline, isReplaying } from '../actions';
 import Banner from './Banner';
+import { getOfflineData, removeOfflineData, setOfflineData } from '../services/Storage';
+
+import extractExternalId from '../services/extractExternalId';
 
 import GoOnline from './GoOnline';
 import NoNetwork from './NoNetwork';
 
 declare const metaData: any;
+
+declare const manywho: any;
 
 enum OfflineView {
     cache = 0,
@@ -54,15 +59,114 @@ export class Offline extends React.Component<IOfflineProps, IOfflineState> {
         };
     }
 
-    onOnlineClick = () => {
+    checkReplayResponse = (response, cachedFlow, cachedRequest) => {
 
-        // Requests can only be replayed if there is network
-        hasNetwork()
-            .then((response) => {
-                response ?
-                this.setState({ view: OfflineView.replay }) :
-                this.setState({ view: OfflineView.noNetwork });
-            });
+        // Unauthorised response
+        if (response && response.invokeType === 'NOT_ALLOWED') {
+            this.onCloseOnline(cachedFlow);
+            OfflineCore.rejoin(this.props.flowKey);
+
+        // Response contains root faults
+        } else if (response && response.mapElementInvokeResponses && response.mapElementInvokeResponses[0].rootFaults) {
+            // Handle root faults
+
+        // Everything is fine
+        } else {
+            const index = cachedFlow.requests.indexOf(cachedRequest);
+
+            if (index === cachedFlow.requests.length - 1) {
+                this.onOnline();
+            }
+        }
+    }
+
+    onOnlineClick = async () => {
+        const isConnected = await hasNetwork();
+
+        if (isConnected) {
+            const stateId = manywho.utils.extractStateId(this.props.flowKey);
+            const id = manywho.utils.extractFlowId(this.props.flowKey);
+
+            const cachedFlow = await getOfflineData(stateId, id, null);
+
+            if (cachedFlow) {
+
+                if (!cachedFlow.requests || cachedFlow.requests.length === 0) {
+                    await removeOfflineData(stateId);
+                    this.onOnline();
+
+                } else {
+                    await removeOfflineData(stateId);
+
+                    cachedFlow.requests.forEach(async (cachedRequest) => {
+                        cachedRequest.request.stateId = cachedFlow.state.id;
+                        cachedRequest.request.stateToken = cachedFlow.state.token;
+
+                        const token = manywho.state.getAuthenticationToken(this.props.flowKey);
+
+                        if (cachedRequest.request.type === 'fileData') {
+
+                            try {
+                                const fileUploadResponse = await manywho.ajax.uploadFiles(
+                                    cachedRequest.request.files,
+                                    cachedRequest.request,
+                                    cachedFlow.tenantId,
+                                    token,
+                                    () => {},
+                                    cachedRequest.request.stateId,
+                                );
+
+                                if (fileUploadResponse) {
+                                    this.checkReplayResponse(
+                                        fileUploadResponse,
+                                        cachedFlow,
+                                        cachedRequest,
+                                    );
+                                }
+
+                            } catch (error) {
+                                console.log(error);
+                            }
+                        }
+
+                        if (cachedRequest.request.type !== 'fileData') {
+
+                            try {
+                                const response = await manywho.ajax.invoke(
+                                    cachedRequest.request,
+                                    cachedFlow.tenantId,
+                                    token,
+                                );
+
+                                if (response) {
+                                    await extractExternalId(
+                                        cachedRequest,
+                                        cachedFlow.tenantId,
+                                        token,
+                                        stateId,
+                                    );
+
+                                    this.checkReplayResponse(
+                                        response,
+                                        cachedFlow,
+                                        cachedRequest,
+                                    );
+                                }
+
+                            } catch (error) {
+                                console.log(error.responseText);
+                            }
+                        }
+                    });
+                }
+
+            } else {
+                this.props.toggleIsOnline();
+            }
+
+        } else {
+            this.setState({ view: OfflineView.noNetwork });
+        }
     }
 
     onOnline = () => {

@@ -31,6 +31,11 @@ export const setCachingProgress = result => ({
     payload: result,
 });
 
+export const setReplayError = result => ({
+    type: 'REPLAY_ERROR',
+    payload: result,
+});
+
 export const cachingProgress = (result) => {
     const progress = result.progress;
     const flowKey = result.flowKey;

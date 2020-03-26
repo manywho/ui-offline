@@ -14,7 +14,7 @@ const initialState = {
     authenticationToken: null,
     id: null,
     objectData: null,
-    requests: null,
+    requests: [],
     tenantId: null,
     state: null,
 };
@@ -25,6 +25,21 @@ const flowState = (flow: IFlowState = initialState, action) => {
         return {
             ...action.payload,
             state: StateInit(action.payload.state),
+        };
+
+    case 'REMOVE_REQUEST': {
+        const index = flow.requests.indexOf(action.payload);
+        flow.requests.splice(index, 1);
+        return {
+            ...flow,
+            requests: flow.requests,
+        };
+    }
+
+    case 'REMOVE_ALL_REQUESTS':
+        return {
+            ...flow,
+            requests: [],
         };
 
     default:

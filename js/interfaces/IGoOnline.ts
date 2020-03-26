@@ -9,4 +9,6 @@ export interface IGoOnlineProps {
     onOnline: Function;
     toggleIsReplaying: Function;
     setFlowFromCache: Function;
+    removeCachedRequest: Function;
+    removeAllCachedRequests: Function;
 }

@@ -8,6 +8,15 @@ export const setFlow = result => ({
     payload: result,
 });
 
+export const removeCachedRequest = request => ({
+    type: 'REMOVE_REQUEST',
+    payload: request,
+});
+
+export const removeAllCachedRequests = () => ({
+    type: 'REMOVE_ALL_REQUESTS',
+});
+
 export const setFlowFromCache = (stateId, id, flowKey) => {
     return (dispatch) => {
         getOfflineData(stateId, id, null)

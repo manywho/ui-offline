@@ -83,7 +83,7 @@ export class Offline extends React.Component<IOfflineProps, IOfflineState> {
             .then(() => {
 
                 // Back into offline mode
-                this.props.toggleIsOffline({ hasNetwork: false });
+                this.props.toggleIsOffline({ hasNetwork: true });
                 this.props.toggleIsReplaying(false);
                 this.setState({ view: null });
             });

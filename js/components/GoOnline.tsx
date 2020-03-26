@@ -4,7 +4,7 @@ import { removeOfflineData } from '../services/Storage';
 import { IGoOnlineProps, IGoOnlineState } from '../interfaces/IGoOnline';
 import { connect } from 'react-redux';
 import { isReplaying } from '../actions';
-import { setFlowFromCache } from '../actions/flow';
+import { setFlowFromCache, removeAllCachedRequests, removeCachedRequest } from '../actions/flow';
 import { removeRequest, removeRequests } from '../models/Flow';
 
 declare const manywho: any;
@@ -14,6 +14,8 @@ const mapStateToProps = (state) => {
 };
 
 const mapDispatchToProps = {
+    removeAllCachedRequests,
+    removeCachedRequest,
     setFlowFromCache,
     toggleIsReplaying: isReplaying,
 };
@@ -28,8 +30,7 @@ export class GoOnline extends React.Component<IGoOnlineProps, IGoOnlineState> {
     }
 
     onDeleteRequest = (request) => {
-        removeRequest(request);
-        this.forceUpdate();
+        this.props.removeCachedRequest(request);
     }
 
     onReplayDone = (request) => {
@@ -50,7 +51,7 @@ export class GoOnline extends React.Component<IGoOnlineProps, IGoOnlineState> {
     }
 
     onDeleteAll = () => {
-        removeRequests();
+        this.props.removeAllCachedRequests();
         this.props.onOnline();
     }
 

@@ -11,8 +11,9 @@ export interface IOfflineProps {
     isOffline: boolean;
     hasNetwork: boolean;
     cachingProgress: number;
+    replayError: any;
     toggleIsOffline: Function;
     toggleIsReplaying: Function;
     toggleIsOnline: Function;
-    foo: Function;
+    setReplayError: Function;
 }

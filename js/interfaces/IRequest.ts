@@ -15,4 +15,5 @@ export interface IRequestProps {
     replayNow: boolean;
     isDisabled: boolean;
     cancelReplay: Function;
+    replayError: any;
 }

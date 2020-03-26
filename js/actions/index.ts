@@ -1,3 +1,5 @@
+import { setOfflineData } from '../services/Storage';
+
 declare const manywho;
 
 interface IisOffline {
@@ -31,10 +33,17 @@ export const setCachingProgress = result => ({
     payload: result,
 });
 
-export const setReplayError = result => ({
-    type: 'REPLAY_ERROR',
-    payload: result,
-});
+export const setReplayError = (response, flow) => {
+    return (dispatch) => {
+        setOfflineData(flow)
+            .then(() => {
+                dispatch({
+                    type: 'REPLAY_ERROR',
+                    payload: response,
+                });
+            });
+    };
+};
 
 export const cachingProgress = (result) => {
     const progress = result.progress;

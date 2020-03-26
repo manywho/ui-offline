@@ -25,7 +25,7 @@ export const setFlowFromCache = (stateId, id, flowKey) => {
                 if (flow) {
                     dispatch(setFlow(flow));
 
-                    if (flow.requests || flow.requests.length === 0) {
+                    if (!flow.requests || flow.requests.length === 0) {
 
                         // The data stored inside indexdb contains no requests,
                         // so just rejoin the flow

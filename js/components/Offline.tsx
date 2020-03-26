@@ -4,7 +4,7 @@ import OfflineCore from '../services/OfflineCore';
 
 import { IOfflineProps, IOfflineState } from '../interfaces/IOffline';
 import { connect } from 'react-redux';
-import { isOffline, isOnline, isReplaying } from '../actions';
+import { isOffline, isOnline, isReplaying, setReplayError } from '../actions';
 import Banner from './Banner';
 import { getOfflineData, removeOfflineData, setOfflineData } from '../services/Storage';
 
@@ -29,21 +29,15 @@ const mapStateToProps = (state) => {
         hasNetwork: state.offlineState.hasNetwork,
         isReplaying: state.offlineState.isReplaying,
         cachingProgress: state.offlineState.cachingProgress,
+        replayError: state.offlineState.replayError,
     };
 };
 
-const mapDispatchToProps = (dispatch) => {
-    return {
-        toggleIsOffline: (bool) => {
-            dispatch(isOffline(bool));
-        },
-        toggleIsOnline: () => {
-            dispatch(isOnline());
-        },
-        toggleIsReplaying: (bool) => {
-            dispatch(isReplaying(bool));
-        },
-    };
+const mapDispatchToProps = {
+    setReplayError,
+    toggleIsOffline: isOffline,
+    toggleIsOnline: isOnline,
+    toggleIsReplaying: isReplaying,
 };
 
 export class Offline extends React.Component<IOfflineProps, IOfflineState> {
@@ -125,7 +119,7 @@ export class Offline extends React.Component<IOfflineProps, IOfflineState> {
                                 }
 
                             } catch (error) {
-                                console.log(error);
+                                this.props.setReplayError(error, cachedFlow);
                             }
                         }
 
@@ -154,7 +148,7 @@ export class Offline extends React.Component<IOfflineProps, IOfflineState> {
                                 }
 
                             } catch (error) {
-                                console.log(error.responseText);
+                                this.props.setReplayError(error.responseText, cachedFlow);
                             }
                         }
                     });
@@ -217,13 +211,11 @@ export class Offline extends React.Component<IOfflineProps, IOfflineState> {
 
         let view = null;
 
-        switch (this.state.view) {
-
-        case OfflineView.replay:
+        if (this.state.view === OfflineView.replay || this.props.replayError) {
             view = <GoOnline onOnline={this.onOnline} onClose={this.onCloseOnline} flowKey={this.props.flowKey} />;
-            break;
+        }
 
-        case OfflineView.noNetwork:
+        if (this.state.view === OfflineView.noNetwork) {
             view = <NoNetwork onClose={this.onCloseNoNetwork} />;
         }
 

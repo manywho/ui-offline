@@ -3,6 +3,8 @@ import RequestFault from './RequestFault';
 import Progress from './Progress';
 import FileList from './FileList';
 import { IRequestProps, IRequestState } from '../interfaces/IRequest';
+import { setReplayError } from '../actions';
+import { connect } from 'react-redux';
 import OfflineCore from '../services/OfflineCore';
 import extractExternalId from '../services/extractExternalId';
 
@@ -114,12 +116,12 @@ class Request extends React.Component<IRequestProps, Partial<IRequestState>> {
         }
 
         let response = null;
-        if (this.state.response) {
-            response = <RequestFault response={this.state.response} />;
+        if (this.state.response || this.props.replayError) {
+            response = <RequestFault response={this.state.response || this.props.replayError} />;
         }
 
         let cachedRequest = null;
-        if (!this.state.isCollapsed && !this.state.isReplaying && !this.state.response) {
+        if (!this.state.isCollapsed && !this.state.isReplaying && !this.state.response && !this.props.replayError) {
             cachedRequest = <div className="pending-request-json">
                 <pre>{JSON.stringify(this.props.cachedRequest.request, null, 4)}</pre>
             </div>;
@@ -156,4 +158,17 @@ class Request extends React.Component<IRequestProps, Partial<IRequestState>> {
     }
 }
 
-export default Request;
+const mapStateToProps = (state) => {
+    return {
+        replayError: state.offlineState.replayError,
+    };
+};
+
+const mapDispatchToProps = {
+    setReplayError,
+};
+
+export default connect(
+    mapStateToProps,
+    mapDispatchToProps,
+)(Request);

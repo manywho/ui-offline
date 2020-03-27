@@ -16,4 +16,5 @@ export interface IOfflineProps {
     toggleIsReplaying: Function;
     toggleIsOnline: Function;
     setReplayError: Function;
+    removeCachedRequest: Function;
 }

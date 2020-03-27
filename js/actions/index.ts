@@ -33,13 +33,13 @@ export const setCachingProgress = result => ({
     payload: result,
 });
 
-export const setReplayError = (response, flow) => {
+export const setReplayError = (response, flow, requestKey) => {
     return (dispatch) => {
         setOfflineData(flow)
             .then(() => {
                 dispatch({
                     type: 'REPLAY_ERROR',
-                    payload: response,
+                    payload: { response, requestKey },
                 });
             });
     };

@@ -5,6 +5,7 @@ import OfflineCore from '../services/OfflineCore';
 import { IOfflineProps, IOfflineState } from '../interfaces/IOffline';
 import { connect } from 'react-redux';
 import { isOffline, isOnline, isReplaying, setReplayError } from '../actions';
+import { removeCachedRequest } from '../actions/flow';
 import Banner from './Banner';
 import { getOfflineData, removeOfflineData, setOfflineData } from '../services/Storage';
 
@@ -35,6 +36,7 @@ const mapStateToProps = (state) => {
 
 const mapDispatchToProps = {
     setReplayError,
+    removeCachedRequest,
     toggleIsOffline: isOffline,
     toggleIsOnline: isOnline,
     toggleIsReplaying: isReplaying,
@@ -69,7 +71,10 @@ export class Offline extends React.Component<IOfflineProps, IOfflineState> {
             const index = cachedFlow.requests.indexOf(cachedRequest);
 
             if (index === cachedFlow.requests.length - 1) {
+                this.props.removeCachedRequest(cachedRequest);
                 this.onOnline();
+            } else {
+                this.props.removeCachedRequest(cachedRequest);
             }
         }
     }
@@ -92,7 +97,7 @@ export class Offline extends React.Component<IOfflineProps, IOfflineState> {
                 } else {
                     await removeOfflineData(stateId);
 
-                    cachedFlow.requests.forEach(async (cachedRequest) => {
+                    cachedFlow.requests.forEach(async (cachedRequest, index) => {
                         cachedRequest.request.stateId = cachedFlow.state.id;
                         cachedRequest.request.stateToken = cachedFlow.state.token;
 
@@ -119,13 +124,16 @@ export class Offline extends React.Component<IOfflineProps, IOfflineState> {
                                 }
 
                             } catch (error) {
-                                this.props.setReplayError(error, cachedFlow);
+                                this.props.setReplayError(error, cachedFlow, cachedRequest.request.key);
                             }
                         }
 
                         if (cachedRequest.request.type !== 'fileData') {
 
                             try {
+                                if (index === 1) {
+                                    cachedRequest.request.invokeType = 'foo';
+                                }
                                 const response = await manywho.ajax.invoke(
                                     cachedRequest.request,
                                     cachedFlow.tenantId,
@@ -148,7 +156,7 @@ export class Offline extends React.Component<IOfflineProps, IOfflineState> {
                                 }
 
                             } catch (error) {
-                                this.props.setReplayError(error.responseText, cachedFlow);
+                                this.props.setReplayError(error.responseText, cachedFlow, cachedRequest.request.key);
                             }
                         }
                     });

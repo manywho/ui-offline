@@ -76,7 +76,10 @@ const offlineState = (
     case 'REPLAY_ERROR':
         return {
             ...state,
-            replayError: action.payload,
+            replayError: {
+                response: action.payload.response,
+                requestKey: action.payload.requestKey,
+            },
         };
 
     default:

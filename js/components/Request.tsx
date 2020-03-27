@@ -111,17 +111,21 @@ class Request extends React.Component<IRequestProps, Partial<IRequestState>> {
 
     render() {
         let replaying = null;
+
+        const replayError = this.props.replayError.requestKey === this.props.cachedRequest.request.key ?
+            this.props.replayError.response : null;
+
         if (this.state.isReplaying) {
             replaying = <p className="text-info replaying">Replaying...</p>;
         }
 
         let response = null;
-        if (this.state.response || this.props.replayError) {
-            response = <RequestFault response={this.state.response || this.props.replayError} />;
+        if (this.state.response || replayError) {
+            response = <RequestFault response={this.state.response || replayError} />;
         }
 
         let cachedRequest = null;
-        if (!this.state.isCollapsed && !this.state.isReplaying && !this.state.response && !this.props.replayError) {
+        if (!this.state.isCollapsed && !this.state.isReplaying && !this.state.response && !replayError) {
             cachedRequest = <div className="pending-request-json">
                 <pre>{JSON.stringify(this.props.cachedRequest.request, null, 4)}</pre>
             </div>;
